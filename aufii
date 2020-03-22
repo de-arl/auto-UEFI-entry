@@ -1,6 +1,5 @@
-### Automatically generate UEFI-boot entries
-#
 #!/bin/bash
+### Automatically generate UEFI-boot entries
 usage() { printf "Usage:\t$0 \naufii is a simple interactive tool to automatically generate UEFI boot entries. It generates efibootmgr commands and exports them to a small executable. You can safely run the script as it does write nothing without further confirmation. \n [-h]\t<display help>\n "; 1>&2; exit 1; }
 
 # Detect partitions

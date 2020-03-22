@@ -1,7 +1,7 @@
 # auto-UEFI-entry
 An interactive tool to auto-generate UEFI-entries
 
-aufii ist the fastest way to create UEFI-entries.
+aufii ist a fast way to create UEFI-entries.
 
 aufii works like this:
 aufii autodetects boot, root and swap partitions with blkid, asks you wether you need intel-ucode and which kernel you use and AUTOMATICALLY CREATES THE NECESSARY COMMANDS FOR YOUR UEFI-ENTRIES with efibootmgr. You can check which devices will be used and wether the auto-composed commands are correct. aufii will create a small executable and if thou wilst - execute it.
@@ -14,4 +14,4 @@ aufii is a very simple bash script inviting you to add some more functionality a
 
 But carefully check the created commands, as wrong UEFI-entries will render a system unbootable. So you better have a live-system at hand when trying the tool late at night just for fun.
 
-Simply run aufii.
+Simply run aufii. As it is very basic, you are invited to add more functions and commmit.
