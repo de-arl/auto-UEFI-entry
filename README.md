@@ -12,6 +12,6 @@ aufii is a very simple bash script inviting you to add some more functionality a
 
 But carefully check the created commands, as wrong UEFI-entries will render a system unbootable. So you better have a live-system at hand when trying the tool late at night just for fun.
 
-Simply run aufii. As it is very basic, you are invited to add more functions and commmit.
+Simply run aufii. As it is very basic, you are invited to add more functions and commit.
 
 Munich, March 2020, arl
