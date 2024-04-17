@@ -11,9 +11,12 @@ while getopts :h OPT; do
 	esac
 done
 shift $((OPTIND-1))
-read -r -p "Simple interactive tool to create UEFI-boot entries. No changes will be written to disk before confirmation. Start now (y/n)? " CHOICE
-case ${CHOICE} in
-y)	
+read -r -p "Simple interactive tool to create UEFI-boot entries. No changes will be written to disk before confirmation. Start now (y/N)? " CHOICE
+if [ "${CHOICE}" != "y" ]; then
+  printf "Exiting\n"
+  exit 1
+fi
+
 echo ...
 echo ...
 read -r -p "Please specify EFI partition: " str
@@ -23,8 +26,16 @@ read -r -p "Please specify EFI partition: " str
 
 EFI=${str}
 EFIU=$(blkid | grep "${EFI}" | awk -F '"' '{print $2}')
-DISK=$(echo "${EFI}" | awk -F 'p' '{print $1}')
-PART=$(echo "${EFI}" | awk -F 'p' '{print $2}')
+
+## Check if drive is /dev/nvmeXXX or /dev/sdXX
+if [ "${EFI:5:4}" == "nvme" ]; then
+  DISK=$(echo "${EFI}" | awk -F 'p' '{print $1}')
+  PART=$(echo "${EFI}" | awk -F 'p' '{print $2}')
+else
+  DISK=$(echo "${EFI::-1}")
+  PART=$(echo "${EFI: -1}")
+fi
+
 AROT=$(lsblk| grep -w "/"|awk -F ' ' '{print $1}'|tail -c4)
 ROOT=$(blkid | grep "${AROT}"| awk -F '"' '{print $2}')
 SWAP=$(blkid | grep swap | awk -F '"' '{print $2}')
@@ -50,12 +61,7 @@ n)
 echo "Not using microcode"
 echo ...
 echo ...;;
-esac;;
-n)
-echo "Aborted by user"
-exit 1;;
 esac
-shift $((OPTIND-1))
 
 # Choose kernel
 read -r -p "Choose your kernel: linux, linux-hardened, linux-lts, linux-zen (l/h/s/z) " CHOICE
@@ -85,7 +91,14 @@ shift $((OPTIND-1))
 
 # Name
 read -r -p "Please label the boot entry (e.g. Arch-Linux): " str
-NAME=${str}
+## empty strings as boot entries may crash uefi menus
+if [ ! -z "$str" -a "$str" != " " ]; then
+  NAME=${str} 
+else
+  printf "Setting \"Arch-Linux\" label\n\n"
+  NAME="Arch-Linux"
+fi
+
 shift $((OPTIND-1))
 
 # Compose commands
@@ -113,7 +126,7 @@ echo "${LINX}" >> UEFI_gen${KERN}
 echo "exit 0" >> UEFI_gen${KERN}
 echo "# See man efibootmgr" >> UEFI_gen${KERN}
 chmod +x UEFI_gen${KERN}
-printf "Commands written to file UEFI_gen${KERN}"
+printf "Commands written to file UEFI_gen${KERN}\n"
 }
 
 read -r -p "Create executable, create and execute (sets UEFI boot entries) or abort (c/ce/a)? " CHOICE 
@@ -123,7 +136,7 @@ write_exec;;
 ce) # write to file and execute it
 write_exec
 ./UEFI_gen${KERN} 
-printf "Changes written, poweroff and restart, don't reboot.";;
+printf "Changes written, poweroff and restart, don't reboot.\n";;
 a)  # abort
 printf "Aborted, no changes written to disk.\n";;
 esac
